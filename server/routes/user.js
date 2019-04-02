@@ -11,4 +11,8 @@ const route = Router();
 route
   .post('/signup', user.signup);
 
+// log in route
+route
+  .post('/', user.signin);
+
 export default route;

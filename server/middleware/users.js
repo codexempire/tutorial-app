@@ -47,5 +47,26 @@ class middleware{
     callback(error);
     return null;
   }
+
+  // log in middleware
+  static login(req, callback) {
+    const schema = Joi.object().keys({
+      phone: Joi.string()
+        .min(10)
+        .max(12)
+        .required()
+        .label('Enter your Phone number'),
+      password: Joi.string()
+        .regex(/^[a-zA-Z0-9]{3,30}$/)
+        .min(8)
+        .required()
+        .label("Enter a password of not less than 8 characters")
+    });
+
+    const { error } = Joi.validate(req.body, schema);
+
+    callback(error);
+    return null;
+  }
 }
 export default middleware;

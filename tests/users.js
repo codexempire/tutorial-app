@@ -52,7 +52,7 @@ describe('USER', () => {
         });
     });
 
-    it('should return status 500 if the user tries to submit the same information', (done) => {
+    it('should return status 500 if the user tries to submit the same information with the same phone number', (done) => {
       chai
         .request(app)
         .post('/api/v1/users/signup')
@@ -67,6 +67,76 @@ describe('USER', () => {
         })
         .end((err, res) => {
           res.should.have.status(500);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+  });
+  describe('user signin', () => {
+    // test for signin
+    it('should return 400 if the fields are no filled completely', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users')
+        .send({
+          firstname: 'Prince',
+          lastname: 'Michael'
+        })
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
+    it('should return status 200 with token and user data', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users')
+        .send({
+          phone: '09090838739',
+          password: 'pallete2019'
+        })
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.have.property('token');
+          res.body.should.have.property('data');
+          res.body.data.should.have.property('firstname').eql('Prince');
+          res.body.data.should.have.property('lastname').eql('Michael');
+          res.body.data.should.have.property('address').eql('10 A close jokogbola street');
+          res.body.data.should.have.property('phone').eql('09090838739');
+          res.body.data.should.have.property('dob');
+          res.body.data.should.have.property('gender').eql('male');
+          res.body.data.should.have.property('password');
+          done();
+        });
+    });
+
+    it('should return status 500 if user information does not exist in the database', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users')
+        .send({
+          phone: '09090838740',
+          password: 'pallete2019'
+        })
+        .end((err, res) => {
+          res.should.have.status(500);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
+    it('should return status 409 if user information does not exist in the database', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users')
+        .send({
+          phone: '09090838739',
+          password: 'pallete2018'
+        })
+        .end((err, res) => {
+          res.should.have.status(409);
           res.body.should.have.property('error');
           done();
         });

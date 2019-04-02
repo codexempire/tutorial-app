@@ -11,5 +11,16 @@ class model{
     
     return null;
   }
+
+  static login(phone, callback) {
+    const queryText = `SELECT * FROM users WHERE phone='${phone}'`;
+
+    pool
+      .query(queryText)
+      .then(data => callback({ success: true, data: data.rows[0] }))
+      .catch(err => callback({ success: false, data: err.message }));
+    
+    return null;
+  }
 }
 export default model;
